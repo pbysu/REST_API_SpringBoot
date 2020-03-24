@@ -1,5 +1,6 @@
 package me.bysu.restAPI.events;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -9,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.net.URI;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Controller
 @RequestMapping(value ="/api/events/", produces = MediaTypes.HAL_JSON_VALUE)
@@ -17,13 +17,21 @@ public class EventController {
 
     private final EventRepository eventRepository;
 
+    private final ModelMapper modelMapper;
+
     // just one Constructor and  parameter already set been so can skip @Autowired
-    public EventController(EventRepository eventRepository) {
+    public EventController(EventRepository eventRepository, ModelMapper modelMapper) {
         this.eventRepository = eventRepository;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping
-    public ResponseEntity createEvent(@RequestBody Event event){
+    public ResponseEntity createEvent(@RequestBody EventDto eventDto){
+    /*       Event event = Event.builder()
+                .name(eventDto.getName())
+                ...
+    */
+        Event event = modelMapper.map(eventDto, Event.class);
         Event newEvent = this.eventRepository.save(event);
         URI createdUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
         return ResponseEntity.created(createdUri).body(event);
