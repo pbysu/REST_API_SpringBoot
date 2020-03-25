@@ -12,4 +12,4 @@ spring.jackson.deserialization.fail-unknown-properties
 
  errors.rejectValue
  
- 
+ java bean -> objectMapper -> json : you can body
