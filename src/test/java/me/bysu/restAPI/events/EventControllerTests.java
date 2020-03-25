@@ -46,6 +46,37 @@ public class EventControllerTests {
     @Test
     public void createEvent() throws Exception {
 
+        EventDto event = EventDto.builder()
+                .name("Spring")
+                .description("REST API Development with Spring")
+                .beginEnrollmentDateTime(LocalDateTime.of(2020,3,23,22,23))
+                .closeEnrollmentDateTime(LocalDateTime.of(2020,3,24,22,23))
+                .beginEventDateTime(LocalDateTime.of(2020,3,25,22,23))
+                .endEventDateTime(LocalDateTime.of(2020,3,26,22,23))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("A-plus")
+                .build();
+                // whatever you set, It is changed appropriately through dto
+//        Mockito.when(eventRepository.save(event)).thenReturn(event); : this event is not that event
+        mockMvc.perform(post("/api/events/")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(event))
+        )
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(header().exists(HttpHeaders.LOCATION))
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE))
+                .andExpect(jsonPath("id").value(Matchers.not(100)))
+                .andExpect(jsonPath("free").value(Matchers.not(true)));
+    }
+
+    @Test
+    public void createEvent_BadRequest() throws Exception {
+
         Event event = Event.builder()
                 .id(100)
                 .name("Spring")
@@ -62,7 +93,7 @@ public class EventControllerTests {
                 .offline(false)
                 .eventStatus(EventStatus.PUBLISHED)
                 .build();
-                // whatever you set, It is changed appropriately through dto
+        // whatever you set, It is changed appropriately through dto
 //        Mockito.when(eventRepository.save(event)).thenReturn(event); : this event is not that event
         mockMvc.perform(post("/api/events/")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -70,12 +101,7 @@ public class EventControllerTests {
                 .content(objectMapper.writeValueAsString(event))
         )
                 .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").exists())
-                .andExpect(header().exists(HttpHeaders.LOCATION))
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE))
-                .andExpect(jsonPath("id").value(Matchers.not(100)))
-                .andExpect(jsonPath("free").value(Matchers.not(true)));
+                .andExpect(status().isBadRequest());
     }
 
 }
