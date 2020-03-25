@@ -1,15 +1,13 @@
 package me.bysu.restAPI.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.bysu.restAPI.common.TestDescription;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -44,9 +42,10 @@ public class EventControllerTests {
     */
 
     @Test
+    @TestDescription("normal create event test")
     public void createEvent() throws Exception {
 
-        EventDto event = EventDto.builder()
+        EventDto eventDto = EventDto.builder()
                 .name("Spring")
                 .description("REST API Development with Spring")
                 .beginEnrollmentDateTime(LocalDateTime.of(2020,3,23,22,23))
@@ -63,7 +62,7 @@ public class EventControllerTests {
         mockMvc.perform(post("/api/events/")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaTypes.HAL_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(event))
+                .content(objectMapper.writeValueAsString(eventDto))
         )
                 .andDo(print())
                 .andExpect(status().isCreated())
@@ -75,6 +74,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @TestDescription(" use cant not input values create error event test")
     public void createEvent_BadRequest() throws Exception {
 
         Event event = Event.builder()
@@ -110,8 +110,31 @@ public class EventControllerTests {
 
         this.mockMvc.perform(post("/api/events/")
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .content(this.objectMapper.writeValueAsString((eventDto))))
+        .content(this.objectMapper.writeValueAsString(eventDto)))
                 .andExpect(status().isBadRequest());
     }
 
+
+    @Test
+    @TestDescription("some values do not enter but they need to enter")
+    public void createEvent_BadRequest_WrongInput() throws Exception {
+
+        EventDto eventDto = EventDto.builder()
+                .name("Spring")
+                .description("REST API Development with Spring")
+                .beginEnrollmentDateTime(LocalDateTime.of(2020, 3, 27, 22, 23))
+                .closeEnrollmentDateTime(LocalDateTime.of(2020, 3, 24, 22, 23))
+                .beginEventDateTime(LocalDateTime.of(2020, 3, 25, 22, 23))
+                .endEventDateTime(LocalDateTime.of(2020, 3, 21, 22, 23))
+                .basePrice(10000)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("A-plus")
+                .build();
+
+        this.mockMvc.perform(post("/api/events/")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andExpect(status().isBadRequest());
+    }
 }

@@ -21,10 +21,13 @@ public class EventController {
 
     private final ModelMapper modelMapper;
 
+    private final EventValidator eventValidator;
+
     // just one Constructor and  parameter already set been so can skip @Autowired
-    public EventController(EventRepository eventRepository, ModelMapper modelMapper) {
+    public EventController(EventRepository eventRepository, ModelMapper modelMapper, EventValidator eventValidator) {
         this.eventRepository = eventRepository;
         this.modelMapper = modelMapper;
+        this.eventValidator = eventValidator;
     }
 
     @PostMapping
@@ -32,6 +35,13 @@ public class EventController {
         if(errors.hasErrors()){
             return ResponseEntity.badRequest().build();
         }
+
+        eventValidator.validate(eventDto, errors);
+
+        if(errors.hasErrors()){
+            return ResponseEntity.badRequest().build();
+        }
+
         Event event = modelMapper.map(eventDto, Event.class);
         Event newEvent = this.eventRepository.save(event);
         URI createdUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
