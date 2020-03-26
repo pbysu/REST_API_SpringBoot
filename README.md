@@ -1,22 +1,36 @@
+ 
 # This project from inflrean
 
 This lecture title is "REST API using SpringBoot"
 
 lecture made by keesun
 
-# 2d branch
+## 2d branch
 
-## ResponseEntity
+### ResponseEntity
 
-## REST and URI
-## MockMvc
+### REST and URI
 
-## jackson
+### MockMvc
 
-# 3d branch
+### jackson
 
-## DTO DAO Entity
+## 3d branch
 
-## JpaRepository
+### DTO DAO Entity
 
-## @Mock @MockBean @SpringBootTest
+### JpaRepository
+
+### @Mock @MockBean @SpringBootTest
+
+## 4d branch
+
+### done testing for sublist
+
+### Validation annotation
+
+### Serialization and Deserialization
+
+###  JsonSerializer<Errors>  
+
+### Custom Annotation
