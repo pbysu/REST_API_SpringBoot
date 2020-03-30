@@ -2,6 +2,7 @@ package me.bysu.restAPI.events;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
@@ -30,23 +31,36 @@ public class EventController {
         this.eventValidator = eventValidator;
     }
 
+    // PostMapping
     @PostMapping
+
+    // @RequestBody : Want to get value from json
+    // @Valid : Want to verify input value using @NotEmpty @NotNull in EventDto
+    // ResponseEntity : Have HttpHeader and body by inheriting HttpEntity
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors){
         if(errors.hasErrors()){
             return ResponseEntity.badRequest().body(errors);
         }
 
+        // This error case is made by me
         eventValidator.validate(eventDto, errors);
         if(errors.hasErrors()){
             return ResponseEntity.badRequest().body(errors);
         }
+
+        // modelMapper : library to help me for minute labor
         Event event = modelMapper.map(eventDto, Event.class);
 
-        event.update(); //before save event
-
-
+        // values update by method.
+        event.update();
         Event newEvent = this.eventRepository.save(event);
-        URI createdUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
-        return ResponseEntity.created(createdUri).body(event);
+
+        // HATEOAS ~~
+        WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
+        URI createdUri = selfLinkBuilder.toUri();
+        EventResource eventResource = new EventResource(event);
+        eventResource.add(linkTo(EventController.class).withRel("query-events"));
+        eventResource.add(selfLinkBuilder.withRel("update-events"));
+        return ResponseEntity.created(createdUri).body(eventResource);
     }
 }
