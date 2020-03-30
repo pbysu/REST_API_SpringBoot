@@ -10,6 +10,10 @@ in my case it is in Event's update method.
 
 ## Testing with parameters
 
+### you have to watch out version of junit
+
+junit 5 is different version 4 how to set parameters .
+
 ```java
 
 @RunWith(JUnitParamsRunner.class)

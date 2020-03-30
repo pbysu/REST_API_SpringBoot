@@ -1,36 +1,73 @@
 package me.bysu.restAPI.events;
 
-import org.junit.jupiter.api.Test;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-class EventTest {
+import static org.assertj.core.api.Assertions.assertThat;
+@RunWith(JUnitParamsRunner.class)
+public class EventTest {
 
     @Test
-    public void builder(){
-        Event event= Event.builder()
-                .name("Inflear Spring REST API")
-                .description("REST API development with Spring")
+    public void builder() {
+        String name = "test event";
+        Event event = Event.builder()
+                .name(name)
+                .description("ksug")
                 .build();
-        assertThat(event).isNotNull();
+
+        assertThat(event.getName()).isEqualTo(name);
     }
 
     @Test
-    public void javaBean(){
-        //Given
-
-        String name = "Event";
-        String description = "Spring";
-
-        //When
+    public void javaBean() {
+        String name = "keesun";
         Event event = new Event();
         event.setName(name);
-        event.setDescription(description);
-
-
-        //Then
         assertThat(event.getName()).isEqualTo(name);
-        assertThat(event.getDescription()).isEqualTo(description);
+    }
+
+
+    @Test
+    @Parameters({
+            "0, 0, true",
+            "100, 0, false",
+            "0, 100, false"
+    })
+    public void testFree(int basePrice, int maxPrice, boolean isFree){
+        Event event= Event.builder()
+                .basePrice(basePrice)
+                .maxPrice(maxPrice)
+                .build();
+
+        event.update();
+
+        assertThat(event.isFree()).isEqualTo(isFree);
+    }
+
+
+    private Object[] paramsForTestOffLine(){
+        return new Object[] {
+                new Object[] {"A-plus", true},
+                new Object[] { null, false}
+        };
+    }
+
+    @Test
+    @Parameters(method = "paramsForTestOffLine")
+    public void testOffLine(String location, boolean isOffLine){
+
+        // Given
+        Event event = Event.builder()
+                .location(location)
+                .build();
+        // When
+        event.update();
+
+        // Then
+        assertThat(event.isOffline()).isEqualTo(isOffLine);
+
     }
 
 }
