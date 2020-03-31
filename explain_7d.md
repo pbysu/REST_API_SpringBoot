@@ -88,3 +88,48 @@ in EventControllerTest
         ))
 
 ```
+
+
+snippets?
+
+frome guid of restdocs
+
+mvn package 
+
+ascidoctor plugin 가져와서
+
+prepare-package 
+
+link에 대하여 어떤것들로 만들 수 있는지
+    eventResource.add(linkTo(EventController.class).withRel("query-events"));
+        eventResource.add(selfLinkBuilder.withRel("update-events"));
+        eventResource.add(new Link("/docs/index.html#resources-events-create").withRel("profile"));
+        
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+sudo apt update
+apt-cache policy docker-ceecho
+
+
+docker run --name ndb -p 5432:5432 -e \d=pass -d postgres
+
+port 5432 -d demon mode 
+
+docker exec -i -t rest bash
+
+exec : 어떠한 cmd 실행
+-i : interact 모드
+
+-t : target container 지정
+
+bash : 명령어
+
+
+set application 
+
+
+Index
+
+error를 인덱스화
+
+json 은 json unwrapped 되지 않는다... 그래서 content

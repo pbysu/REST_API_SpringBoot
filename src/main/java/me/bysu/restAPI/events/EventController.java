@@ -1,6 +1,8 @@
 package me.bysu.restAPI.events;
 
+import me.bysu.restAPI.common.ErrorsResource;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
@@ -39,13 +41,13 @@ public class EventController {
     // ResponseEntity : Have HttpHeader and body by inheriting HttpEntity
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors){
         if(errors.hasErrors()){
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         // This error case is made by me
         eventValidator.validate(eventDto, errors);
         if(errors.hasErrors()){
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         // modelMapper : library to help me for minute labor
@@ -61,6 +63,11 @@ public class EventController {
         EventResource eventResource = new EventResource(event);
         eventResource.add(linkTo(EventController.class).withRel("query-events"));
         eventResource.add(selfLinkBuilder.withRel("update-events"));
+        eventResource.add(new Link("/docs/index.html#resources-events-create").withRel("profile"));
         return ResponseEntity.created(createdUri).body(eventResource);
+    }
+
+    private ResponseEntity badRequest(Errors errors) {
+        return ResponseEntity.badRequest().body(new ErrorsResource(errors));
     }
 }

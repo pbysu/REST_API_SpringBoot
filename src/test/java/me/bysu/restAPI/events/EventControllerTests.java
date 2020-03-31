@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -39,6 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureRestDocs // for using restDocs
 
 @Import(RestDocsConfiguration.class)
+
+@ActiveProfiles("test") // 중복 설정 삭제
 public class EventControllerTests {
 
     @Autowired
@@ -83,14 +86,12 @@ public class EventControllerTests {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE))
                 .andExpect(jsonPath("id").value(Matchers.not(100)))
                 .andExpect(jsonPath("free").value(Matchers.not(true)))
-        .andExpect(jsonPath("_links.self").exists())
-        .andExpect(jsonPath("_links.query-events").exists())
-        .andExpect(jsonPath("_links.update-events").exists())
         .andDo(document("create-event",
                 links(
                         linkWithRel("self").description("link to self"),
                         linkWithRel("query-events").description("link to query"),
-                        linkWithRel("update-events").description("link to update existing event")
+                        linkWithRel("update-events").description("link to update existing event"),
+                        linkWithRel("profile").description("link to update an existion")
 
                 ),
                 requestHeaders(
@@ -132,7 +133,8 @@ public class EventControllerTests {
                         fieldWithPath("eventStatus").description("event status"),
                         fieldWithPath("_links.query-events.href").description("link to query event list"),
                         fieldWithPath("_links.update-events.href").description("link to update existing event"),
-                        fieldWithPath("_links.self.href").description("link to profile")
+                        fieldWithPath("_links.profile.href").description("link to profile"),
+                        fieldWithPath("_links.self.href").description("link to self")
                 )
 
         ))
@@ -204,11 +206,11 @@ public class EventControllerTests {
                 .content(this.objectMapper.writeValueAsString(eventDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$[0].objectName").exists())
-                .andExpect(jsonPath("$[0].defaultMessage").exists())
-                .andExpect(jsonPath("$[0].code").exists());
+                .andExpect(jsonPath("content[0].objectName").exists())
+                .andExpect(jsonPath("content[0].defaultMessage").exists())
+                .andExpect(jsonPath("content[0].code").exists())
+                .andExpect(jsonPath("_links.index").exists())
+
+        ;
     }
-
-
-
 }

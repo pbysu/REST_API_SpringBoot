@@ -5,6 +5,8 @@ This lecture title is "REST API using SpringBoot"
 
 lecture made by keesun
 
+# List
+
 ## 2d branch
 
 ### ResponseEntity
@@ -35,7 +37,7 @@ lecture made by keesun
 
 ### Custom Annotation
 
-## 5d
+## 5d branch
 
 ###  Apply business logic to tests 
 
@@ -55,6 +57,6 @@ lecture made by keesun
 ### Controller
 
 
-##7d branch
+## 7d branch
 
 ### What is REST DOCS
