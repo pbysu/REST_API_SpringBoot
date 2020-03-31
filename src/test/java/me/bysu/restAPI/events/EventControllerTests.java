@@ -129,10 +129,10 @@ public class EventControllerTests {
                         fieldWithPath("limitOfEnrollment").description("limit of enrollment"),
                         fieldWithPath("free").description("it tells if this event is free or not"),
                         fieldWithPath("offline").description("it tells if this event is offline or not"),
-                        fieldWithPath("eventStatus").description("event status")
+                        fieldWithPath("eventStatus").description("event status"),
                         fieldWithPath("_links.query-events.href").description("link to query event list"),
-                        fieldWithPath("_links.update-event.href").description("link to update existing event"),
-                        fieldWithPath("_links.profile.href").description("link to profile")
+                        fieldWithPath("_links.update-events.href").description("link to update existing event"),
+                        fieldWithPath("_links.self.href").description("link to profile")
                 )
 
         ))
