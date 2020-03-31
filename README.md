@@ -5,6 +5,8 @@ This lecture title is "REST API using SpringBoot"
 
 lecture made by keesun
 
+# List
+
 ## 2d branch
 
 ### ResponseEntity
@@ -35,14 +37,26 @@ lecture made by keesun
 
 ### Custom Annotation
 
-# 5d
+## 5d branch
 
-##  Apply business logic to tests 
+###  Apply business logic to tests 
 
-### you can see it like service
+#### you can see it like service
 
-## Testing with parameters
+### Testing with parameters
 
-## I need to again re-view createEvent in EventController
+### I need to again re-view createEvent in EventController
 
 
+## 6d branch
+
+### HATEOAS
+
+### EventResource class
+
+### Controller
+
+
+## 7d branch
+
+### What is REST DOCS
