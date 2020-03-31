@@ -32,6 +32,9 @@ junit 5 is different version 4 how to set parameters .
 
 ```
 
+## I Will edit explain about HATEOS, REST DOCS (6d, 7d branch)
+
+
 ## I need to again re-view createEvent in EventController
 
 ```java
