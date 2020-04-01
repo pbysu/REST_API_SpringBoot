@@ -1,3 +1,4 @@
+ 
 #7d branch
 
 ## What is REST DOCS
@@ -7,7 +8,6 @@ Spring REST Docs helps you to document RESTful services.
 
 We can set about RestDocs
 below setting is prettyPrint about json.
-
 
 ```java
 @TestConfiguration
@@ -34,102 +34,110 @@ public class RestDocsConfiguration {
 in EventControllerTest
 
 ```java
-
 .andDo(document("create-event",
                 links(
-                        linkWithRel("self").description("link to self"),
-                        linkWithRel("query-events").description("link to query"),
-                        linkWithRel("update-events").description("link to update existing event")
-
+                       ...
                 ),
                 requestHeaders(
-                        headerWithName(HttpHeaders.ACCEPT).description("Accept header"),
-                        headerWithName(HttpHeaders.CONTENT_TYPE).description("content type header")
+                  ..
                 ),
                 requestFields(
-                        fieldWithPath("name").description("Name of new event"),
-                        fieldWithPath("description").description("description of new event"),
-                        fieldWithPath("beginEnrollmentDateTime").description("begin enroll time"),
-                        fieldWithPath("closeEnrollmentDateTime").description("close enroll time"),
-                        fieldWithPath("beginEventDateTime").description("begin event time"),
-                        fieldWithPath("endEventDateTime").description("end event time"),
-                        fieldWithPath("location").description("location of new event"),
-                        fieldWithPath("basePrice").description("base price of new event"),
-                        fieldWithPath("maxPrice").description("max price of new event"),
-                        fieldWithPath("limitOfEnrollment").description("limit of enrollment")
+                  ...
                 ),
                 responseHeaders(
-                        headerWithName(HttpHeaders.LOCATION).description("Location in header"),
-                        headerWithName(HttpHeaders.CONTENT_TYPE).description("content type in header")
-                ),
-                // it added relaxed : need part of value in doc
-                // ResponseFields : need all value in doc
-                responseFields(
-                        fieldWithPath("id").description("Identifier of new event"),
-                        fieldWithPath("name").description("Name of new event"),
-                        fieldWithPath("description").description("description of new event"),
-                        fieldWithPath("beginEnrollmentDateTime").description("begin enroll time"),
-                        fieldWithPath("closeEnrollmentDateTime").description("close enroll time"),
-                        fieldWithPath("beginEventDateTime").description("begin event time"),
-                        fieldWithPath("endEventDateTime").description("end event time"),
-                        fieldWithPath("location").description("location of new event"),
-                        fieldWithPath("basePrice").description("base price of new event"),
-                        fieldWithPath("maxPrice").description("max price of new event"),
-                        fieldWithPath("limitOfEnrollment").description("limit of enrollment"),
-                        fieldWithPath("free").description("it tells if this event is free or not"),
-                        fieldWithPath("offline").description("it tells if this event is offline or not"),
-                        fieldWithPath("eventStatus").description("event status"),
-                        fieldWithPath("_links.query-events.href").description("link to query event list"),
-                        fieldWithPath("_links.update-events.href").description("link to update existing event"),
-                        fieldWithPath("_links.self.href").description("link to self event")
-                       // fieldWithPath("_links.profile.href").description("link to profile")
-                )
+                ...=
+```
 
-        ))
+
+## Using AsciiDocs
+
+AsciiDocs can be replaced by MarkDown
+
+AsciiDocs find the link of adoc by {snippets}
+
+I modified mvn package to use it more efficiently
+
+check my pom.xml's plugins and
+
+link : https://docs.spring.io/spring-restdocs/docs/2.0.3.RELEASE/reference/html5/#getting-started-build-configuration
+
++ setting-plugin-AsciiDoc : I apply like MarkDown preview. 
+
+## Docker & postgresql
+
+need to docker so install Docker follow link
+
+https://docs.docker.com/install/
+
+
+docker run --name rest -p 5432:5432 -e POSTSGRES_PASSWORD=pass -d postgres
+
+docker exec -i -t rest bash
+> p : port number
+
+> i : interactive mode, use I/O standard like keyboard and monitor
+
+> t : Teletypewriter(TTY) easy to think, It is terminal
+
+> e : set any environment variable in the container by using one or more -e flags
+
+> d : containers started in detached mode exit when the root process used to run the container exits, unless you also specify the --rm option.
+ 
+> exec : some cmd execution
+>
+
+ ```
+ su - postgres
+ psql -d postgres -U postgres
+ \l
+ \dt
+ 
+ port 5432 -d demon mode 
+ 
 
 ```
 
 
-snippets?
+# Set application
 
-frome guid of restdocs
+we build using progresql but we need setting to use H2 when test.
+ 
+```json
+         <groupId>com.h2database</groupId>
+         <artifactId>h2</artifactId>
+         <scope>test</scope>
 
-mvn package 
+            <groupId>org.postgresql</groupId>
+         <artifactId>postgresql</artifactId>
+         <scope>runtime</scope>
+```
 
-ascidoctor plugin 가져와서
+and I make two properties set to build each case.
 
-prepare-package 
+#### A file with a different name is needed to override rather than overwrite
 
-link에 대하여 어떤것들로 만들 수 있는지
-    eventResource.add(linkTo(EventController.class).withRel("query-events"));
-        eventResource.add(selfLinkBuilder.withRel("update-events"));
-        eventResource.add(new Link("/docs/index.html#resources-events-create").withRel("profile"));
-        
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
-sudo apt update
-apt-cache policy docker-ceecho
+compare below tow files
 
+> main.resources.application.properties
 
-docker run --name ndb -p 5432:5432 -e \d=pass -d postgres
+> test.resources.application-test.properties
+ 
 
-port 5432 -d demon mode 
+when you want to use test properties, you just write @ActiveProfiles("test") on the class.
 
-docker exec -i -t rest bash
+## Make Error have link of index
 
-exec : 어떠한 cmd 실행
--i : interact 모드
+To do it, I make ErrosResource.class
 
--t : target container 지정
+in there, I define 
 
-bash : 명령어
+```java
+  add(linkTo(methodOn(IndexController.class).index()).withRel("index"));
+```
 
-
-set application 
-
-
-Index
-
-error를 인덱스화
-
-json 은 json unwrapped 되지 않는다... 그래서 content
+in EventController, Errors is covered by ErrorsResource
+```java
+    private ResponseEntity badRequest(Errors errors) {
+        return ResponseEntity.badRequest().body(new ErrorsResource(errors));
+    }
+```
