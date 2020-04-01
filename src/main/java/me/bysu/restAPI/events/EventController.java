@@ -2,22 +2,26 @@ package me.bysu.restAPI.events;
 
 import me.bysu.restAPI.common.ErrorsResource;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller
-@RequestMapping(value ="/api/events/", produces = MediaTypes.HAL_JSON_VALUE)
+@RequestMapping(value ="/api/events", produces = MediaTypes.HAL_JSON_VALUE)
 public class EventController {
 
     private final EventRepository eventRepository;
@@ -65,6 +69,24 @@ public class EventController {
         eventResource.add(selfLinkBuilder.withRel("update-events"));
         eventResource.add(new Link("/docs/index.html#resources-events-create").withRel("profile"));
         return ResponseEntity.created(createdUri).body(eventResource);
+    }
+
+
+    @GetMapping
+    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler){
+        Page<Event> page = this.eventRepository.findAll(pageable);
+                                // assembler.toResource(...) wasted my time ...
+        var pagedResources = assembler.toModel(page, e -> new EventResource(e));
+        pagedResources.add(new Link("/docs/index.html#resources-events-list").withRel("profile"));
+        return ResponseEntity.ok(pagedResources);
+
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity getEvent(@PathVariable Integer id){
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+        return optionalEvent.isEmpty()
+                ? ResponseEntity.notFound().build()
+                : ResponseEntity.ok((new EventResource(optionalEvent.get())).add(new Link("/docs/index.html#resources-events-get").withRel("profile")));
     }
 
     private ResponseEntity badRequest(Errors errors) {
