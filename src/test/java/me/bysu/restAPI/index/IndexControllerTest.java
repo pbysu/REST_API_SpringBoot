@@ -1,6 +1,7 @@
 package me.bysu.restAPI.index;
 
 
+import me.bysu.restAPI.common.BaseControolerTest;
 import me.bysu.restAPI.common.RestDocsConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-@RunWith(SpringRunner.class)
+
+// it move to parent class
+/*@RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 // SpringBootTest is good when web test
@@ -28,11 +31,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @Import(RestDocsConfiguration.class)
 
-@ActiveProfiles("test") // 중복 설정 삭제
-public class IndexControllerTest {
+@ActiveProfiles("test") // 중복 설정 삭제*/
+public class IndexControllerTest extends BaseControolerTest {
 
+/*
+move to parent class
     @Autowired
     MockMvc mockMvc;
+*/
 
     @Test
     public void index() throws Exception{

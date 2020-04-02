@@ -89,3 +89,7 @@ builder 형식 : something 을 저장했을 때 build 가 되는지 확인
 
 > org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 > org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+
+
+
+@Ignore // this class do not have test so Ignore

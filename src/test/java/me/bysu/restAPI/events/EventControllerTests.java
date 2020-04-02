@@ -1,6 +1,7 @@
 package me.bysu.restAPI.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.bysu.restAPI.common.BaseControolerTest;
 import me.bysu.restAPI.common.RestDocsConfiguration;
 import me.bysu.restAPI.common.TestDescription;
 import org.hamcrest.Matchers;
@@ -36,7 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
+// inherit make It do not write annotation in here
+/*@RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 // SpringBootTest is good when web test
@@ -47,15 +49,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Import(RestDocsConfiguration.class)
 
-@ActiveProfiles("test") // 중복 설정 삭제
-public class EventControllerTests {
+@ActiveProfiles("test") // 중복 설정 삭제*/
+public class EventControllerTests extends BaseControolerTest {
 
-    @Autowired
+    // move to parent class
+/*    @Autowired
     MockMvc mockMvc;
 
 
     @Autowired // objectMapper auto set bean
-            ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
+
+    @Autowired
+    ModelMapper modelMapper;*/
 
     @Autowired
     EventRepository eventRepository;
@@ -65,8 +71,7 @@ public class EventControllerTests {
     EventRepository eventRepository;
     */
 
-    @Autowired
-    ModelMapper modelMapper;
+
 
 
     @Test
