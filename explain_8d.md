@@ -1,84 +1,91 @@
-Pageable
-ResponseEntity
+# 8d branch
 
 
-    embedded[0]?
-    
-    eventResource.add(new Link("/docs/index.html#resources-events-create").withRel("profile"));
-    
-    Link..?
-    
-    
+## param - ControllerTest
 
-    @GetMapping
-    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler){
-        Page<Event> page = this.eventRepository.findAll(pageable);
-                                // assembler.toResource(...) wasted my time ...
-        var pagedResources = assembler.toModel(page, e -> new EventResource(e));
-        pagedResources.add(new Link("/docs/index.html#resources-events-list").withRel("profile"));
-        return ResponseEntity.ok(pagedResources);
+```java
 
-    }
-    @GetMapping("/{id}")
-    public ResponseEntity getEvent(@PathVariable Integer id){
-        Optional<Event> optionalEvent = this.eventRepository.findById(id);
-        return optionalEvent.isEmpty()
-                ? ResponseEntity.notFound().build()
-                : ResponseEntity.ok((new EventResource(optionalEvent.get())).add(new Link("/docs/index.html#resources-events-get").withRel("profile")));
-    }
-    
-    
-    @Test
-    @TestDescription("Search 30 pages of 10 events twice")
-    public void queryEvents() throws Exception {
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-        // Given
-        IntStream.range(0, 30).forEach(this::generateEvent);
-
-        // When
-        this.mockMvc.perform(get("/api/events")
+get("/api/events")
                 .param("page", "1") // 0,1  so 1
                 .param("size", "10")
                 .param("sort", "name,DESC")
-        )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("page").exists())
-                .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
-                .andExpect(jsonPath("_links.self").exists())
-                .andExpect(jsonPath("_links.profile").exists())
-                .andDo(document("query-events"))
 
-        ;
-    }
+```
 
+MockHttpServletRequestBuilder Obj {
 
-    @Test
-    @TestDescription("Searching for an existing event")
-    public void getEvent() throws Exception{
+URI : /api/events
 
-        // Given
-        Event event = this.generateEvent(100);
+parameters : page, size, sort
 
-        // When & Then
-        this.mockMvc.perform(get("/api/events/{id}", event.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("name").exists())
-                .andExpect(jsonPath("id").exists())
-                .andExpect(jsonPath("_links.self").exists())
-                .andExpect(jsonPath("_links.profile").exists())
-                .andDo(document("get-an-event"))
-        ;
-    }
-
-    @Test
-    @TestDescription("take 404 when it is not exist")
-    public  void getEvent404() throws Exception{
-        // When & Then
-        this.mockMvc.perform(get("/api/events/404404"))
-                .andExpect(status().isNotFound())
-        ;
-    }
 }
 
+MockHttpServletRequestBuilder 객체는 parameter 에 key, value 값으로 저장을 한다.
 
+## pageAble, PagedResourceAssembler -  EventController 
+
+```java
+this.eventRepository.findAll(pageable);
+
+```
+
+eventRepository : JpaRepository 를 상속 받고 있음
+
+JPA paging 정렬 기준으로 정렬해서 page 크기를 정해서 구별하고 몇 번째 페이지를 넘겨줘라
+
+> page : sort, page, size
+
+JpaRepository findAll(T) : return Page<Class> List
+
+> page 기준에 맞는 Entity들 을 넘겨 준다
+
+```java
+var pagedResources = assembler.toModel(page, e -> new EventResource(e));
+```
+
+PagedResourcesAssembler
+
+PagedResources 는 pageAble 의 집합
+
+PagedResource는 pageAble을 전달하는 DTO
+
+PagedResourcesAssembler는 이런 변환 과정을 가능하게 하는 작업.
+
+Page<Event> page : total, content (각각의 Enity 정보), pageAble (size, snumber, sort)
+ 
+
+pagedResources.content : metadata(size, totalElements, totalPages, number), content, links(first, prev, self, next, last)
+
+
+```java 
+    ResponseEntity.ok(something)
+```
+
+builder 형식 : something 을 저장했을 때 build 가 되는지 확인
+
+
+
+# 추가 사항
+
+> MockMvc 
+
+> perform (RequestBuilder)
+
+> public interface RequestBuilder {
+>       MockHttpServletRequest buildRequest(ServletContext var1);
+> }
+
+> ?? 궁금증 MockHttpServletRequest 가 perform 으로 들어가 url 맞는 함수르 실행하는데 
+> Pageable pageable, PagedResourcesAssembler<Event> assembler) 어떻게 params 가 매핑 되는지 궁금함.
+
+
+
+> mockMvc
+> MockMvcResultMatchers. jsonpath
+> MockMvcRequestBuilders.post,get
+
+
+> org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+> org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
