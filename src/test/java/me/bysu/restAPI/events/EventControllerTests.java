@@ -6,6 +6,7 @@ import me.bysu.restAPI.common.TestDescription;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,13 +19,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.print.attribute.standard.Media;
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
+
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -60,6 +64,10 @@ public class EventControllerTests {
     @MockBean // find why use mockBean
     EventRepository eventRepository;
     */
+
+    @Autowired
+    ModelMapper modelMapper;
+
 
     @Test
     @TestDescription("normal create event test")
@@ -223,8 +231,18 @@ public class EventControllerTests {
         Event event = Event.builder()
                 .name("event " + idx)
                 .description("test event")
+                .beginEnrollmentDateTime(LocalDateTime.of(2020, 3, 23, 22, 23))
+                .closeEnrollmentDateTime(LocalDateTime.of(2020, 3, 24, 22, 23))
+                .beginEventDateTime(LocalDateTime.of(2020, 3, 25, 22, 23))
+                .endEventDateTime(LocalDateTime.of(2020, 3, 26, 22, 23))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("A-plus")
+                .free(false)
+                .offline(true)
+                .eventStatus(EventStatus.DRAFT)
                 .build();
-
         return this.eventRepository.save(event);
     }
 
@@ -253,9 +271,13 @@ public class EventControllerTests {
     }
 
 
+
+
+
+
     @Test
     @TestDescription("Searching for an existing event")
-    public void getEvent() throws Exception{
+    public void getEvent() throws Exception {
 
         // Given
         Event event = this.generateEvent(100);
@@ -273,10 +295,94 @@ public class EventControllerTests {
 
     @Test
     @TestDescription("take 404 when it is not exist")
-    public  void getEvent404() throws Exception{
+    public void getEvent404() throws Exception {
         // When & Then
         this.mockMvc.perform(get("/api/events/404404"))
+
                 .andExpect(status().isNotFound())
         ;
+    }
+
+    @Test
+    @TestDescription("update event to correct")
+    public void updateEvent() throws Exception {
+
+        // Given
+        Event event = this.generateEvent(200);
+        EventDto eventDto = this.modelMapper.map(event, EventDto.class);
+        String eventName = "update Event";
+        eventDto.setName(eventName);
+
+        // When
+
+        this.mockMvc.perform(put("/api/events/{id}", event.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(this.objectMapper.writeValueAsString(eventDto))
+        )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").value(eventName))
+                .andExpect(jsonPath("_links.self").exists());
+
+    }
+
+    @Test
+    @TestDescription("update event when event is empty")
+    public void updateEvent400Empty() throws Exception {
+
+        // Given
+        Event event = this.generateEvent(200);
+        EventDto eventDto = new EventDto();
+        // When
+
+        this.mockMvc.perform(put("/api/events/{id}", event.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(this.objectMapper.writeValueAsString(eventDto))
+        )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @TestDescription("update event when event is wrong")
+    public void updateEvent400Wrong() throws Exception {
+
+        // Given
+        Event event = this.generateEvent(200);
+
+        EventDto eventDto = this.modelMapper.map(event, EventDto.class);
+        eventDto.setBasePrice(20000);
+        eventDto.setMaxPrice(1000);
+
+
+        // When)
+
+        this.mockMvc.perform(put("/api/events/{id}", event.getId())
+                .contentType((MediaType.APPLICATION_JSON_VALUE))
+                .content(this.objectMapper.writeValueAsString(eventDto))
+        )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @TestDescription("update event when event is not exist")
+    public void updateEvent404() throws Exception {
+
+        // Given
+        Event event = this.generateEvent(200);
+
+        EventDto eventDto = this.modelMapper.map(event, EventDto.class);
+
+
+        // When
+
+        this.mockMvc.perform(put("/api/events/987654321")
+                .contentType((MediaType.APPLICATION_JSON_VALUE))
+                .content(this.objectMapper.writeValueAsString(eventDto))
+        )
+                .andDo(print())
+                .andExpect(status().isNotFound());
     }
 }

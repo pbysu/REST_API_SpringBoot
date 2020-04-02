@@ -29,8 +29,8 @@ public class Event {
 
 
     public void update() {
-        this.free = (this.basePrice == 0 && this.maxPrice==0) ? true : false;
+        this.free = this.basePrice == 0 && this.maxPrice == 0;
 
-        this.offline = (this.location==null || this.location.isBlank())? false : true;
+        this.offline = this.location != null && !this.location.isBlank();
     }
 }
