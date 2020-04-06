@@ -1,6 +1,7 @@
 package me.bysu.restAPI.events;
 
 import lombok.*;
+import me.bysu.restAPI.accounts.Account;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ public class Event {
     @Enumerated(EnumType.STRING) //ORDINAL
     private EventStatus eventStatus = EventStatus.DRAFT;
 
+    @ManyToOne
+    private Account manager;
 
     public void update() {
         this.free = this.basePrice == 0 && this.maxPrice == 0;

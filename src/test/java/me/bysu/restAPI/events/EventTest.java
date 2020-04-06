@@ -14,7 +14,7 @@ public class EventTest {
         String name = "test event";
         Event event = Event.builder()
                 .name(name)
-                .description("ksug")
+                .description("bysu")
                 .build();
 
         assertThat(event.getName()).isEqualTo(name);

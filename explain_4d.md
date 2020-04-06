@@ -1,3 +1,4 @@
+ 
 # 4d
 
 ## done testing for sublist
@@ -58,7 +59,35 @@ so We need method to make Errors be serializer.
 
 https://docs.oracle.com/javaee/7/api/javax/json/stream/JsonGenerator.html
 
+using jackson
+
 JSON arrays can be created using JsonGenerator by calling the writeStartArray() method and then adding values with the write method.
+
+```java
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
+public class EntityModel<T> extends RepresentationModel<EntityModel<T>> {...}
+    
+```
+
+```java
+public class ErrorsResource extends EntityModel<Errors> {
+    public ErrorsResource(Errors content, Link... links) {
+
+        super(content, links);
+        add(linkTo(methodOn(IndexController.class).index()).withRel("index"));
+    }
+}
+```
+
 
 jsonGenerator
 
