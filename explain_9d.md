@@ -59,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 
 을 추가 하면 스프링 부트 자동 시큐리티 설정은 사라지게 됨
 
-package me.bysu.restAPI.config;
+package me.bysu.restAPI.configs;
 
 import me.bysu.restAPI.accounts.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +75,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
 @Configuration
-@EnableWebFluxSecurity
+@EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -102,5 +102,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Invocation of init method failed; nested exception is org.hibernate.service.spi.ServiceException: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment]
 
+docker가 작동 안하고 있어서 에러 뜬거... 
 
 error  해결법 ..
+
+docker restart rest 

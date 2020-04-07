@@ -1,3 +1,5 @@
+ 
+ 
 # 8d branch
 
 
@@ -66,30 +68,5 @@ pagedResources.content : metadata(size, totalElements, totalPages, number), cont
 builder 형식 : something 을 저장했을 때 build 가 되는지 확인
 
 
+@Ignore 함수 단위 등 테스트 동작을 하지 않고 넘어간다.
 
-# 추가 사항
-
-> MockMvc 
-
-> perform (RequestBuilder)
-
-> public interface RequestBuilder {
->       MockHttpServletRequest buildRequest(ServletContext var1);
-> }
-
-> ?? 궁금증 MockHttpServletRequest 가 perform 으로 들어가 url 맞는 함수르 실행하는데 
-> Pageable pageable, PagedResourcesAssembler<Event> assembler) 어떻게 params 가 매핑 되는지 궁금함.
-
-
-
-> mockMvc
-> MockMvcResultMatchers. jsonpath
-> MockMvcRequestBuilders.post,get
-
-
-> org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
-> org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
-
-
-
-@Ignore // this class do not have test so Ignore
